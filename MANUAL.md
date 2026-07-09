@@ -452,4 +452,21 @@ Los reportes se basan en el método `calcularCierres()` que sigue estas reglas:
 
 ---
 
+---
+
+## Anexo: Agregar Imágenes al Manual
+
+Para capturas de pantalla, guarda las imágenes en la carpeta `screenshots/` del proyecto y referéncialas así:
+
+```markdown
+![Descripción](screenshots/nombre-del-archivo.png)
+```
+
+Ejemplo:
+```markdown
+![Login](screenshots/login.png)
+![Dashboard](screenshots/dashboard.png)
+![Listado de Facturas](screenshots/facturas.png)
+```
+
 *Documento generado el 9 de julio de 2026*
