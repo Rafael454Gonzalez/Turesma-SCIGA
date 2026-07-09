@@ -92,7 +92,6 @@ Tabla con todos los socios registrados.
 | Nombre | Nombre completo |
 | Identificación | Documento de identidad |
 | Teléfono | Número de contacto |
-| Cuota Base | Cuota mensual en dólares |
 | Tipo | Socio o Colaborador |
 | Facturas | Conteo de facturas asociadas |
 | Aportes | Conteo de aportes |
@@ -110,8 +109,6 @@ Tabla con todos los socios registrados.
 | Teléfono | No | Máx. 20 |
 | Email | No | Con formato de email |
 | Dirección | No | Máx. 500 |
-| Cuota Mensual Base | No | Mín. $0 |
-| % Participación | No | Entre 0 y 100 |
 | Tipo de Socio | Sí | Socio o Colaborador |
 | Activo | No | Marcado por defecto |
 

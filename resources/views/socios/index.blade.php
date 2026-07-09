@@ -26,7 +26,6 @@
                     <th class="py-3.5 px-5">Nombre</th>
                     <th class="py-3.5 px-5">Identificación</th>
                     <th class="py-3.5 px-5">Teléfono</th>
-                    <th class="py-3.5 px-5">Cuota Base</th>
                     <th class="py-3.5 px-5">Tipo</th>
                     <th class="py-3.5 px-5 text-center">Facturas</th>
                     <th class="py-3.5 px-5 text-center">Aportes</th>
@@ -40,7 +39,6 @@
                     <td class="py-3.5 px-5 font-bold text-slate-800">{{ $s->nombres }}</td>
                     <td class="py-3.5 px-5 text-slate-500">{{ $s->identificacion }}</td>
                     <td class="py-3.5 px-5 text-slate-500">{{ $s->telefono ?? '—' }}</td>
-                    <td class="py-3.5 px-5 font-bold text-slate-700">$ {{ number_format($s->cuota_mensual_base, 2) }}</td>
                     <td class="py-3.5 px-5">
                         <span class="text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full {{ $s->tipo_socio === 'socio' ? 'bg-[#E31E24]/10 text-[#E31E24] border border-[#E31E24]/20' : 'bg-slate-100 text-slate-600 border border-slate-200' }}">
                             {{ ucfirst($s->tipo_socio) }}

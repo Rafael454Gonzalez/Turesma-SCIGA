@@ -39,28 +39,6 @@
     </div>
 
     <div>
-        <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 block">Cuota Mensual Base</label>
-        <div class="relative">
-            <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400 text-sm font-bold">$</span>
-            <input type="number" step="0.01" min="0" name="cuota_mensual_base"
-                value="{{ old('cuota_mensual_base', $socio?->cuota_mensual_base) }}"
-                class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl pl-8 pr-4 py-3 text-sm font-bold text-slate-700 outline-none focus:border-[#E31E24] transition-all">
-        </div>
-        @error('cuota_mensual_base') <p class="text-xs font-bold text-[#E31E24] mt-1">{{ $message }}</p> @enderror
-    </div>
-
-    <div>
-        <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 block">% Participación</label>
-        <div class="relative">
-            <input type="number" step="0.01" min="0" max="100" name="porcentaje_participacion"
-                value="{{ old('porcentaje_participacion', $socio?->porcentaje_participacion) }}"
-                class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 pr-8 text-sm font-bold text-slate-700 outline-none focus:border-[#E31E24] transition-all">
-            <span class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 text-sm font-bold">%</span>
-        </div>
-        @error('porcentaje_participacion') <p class="text-xs font-bold text-[#E31E24] mt-1">{{ $message }}</p> @enderror
-    </div>
-
-    <div>
         <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5 block">Tipo de Socio <span class="text-[#E31E24]">*</span></label>
         <select name="tipo_socio"
             class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 outline-none focus:border-[#E31E24] transition-all">
