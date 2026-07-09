@@ -37,6 +37,8 @@ Pantalla de acceso con diseño oscuro y el branding **Turesma** en rojo.
 - **Iniciar Sesión**: valida las credenciales. Si son correctas redirige al Dashboard. Si fallan muestra "Credenciales incorrectas."
 - **Cerrar Sesión**: disponible en el menú lateral.
 
+![Captura de pantalla - Inicio de Sesión](screenshots/login.png)
+
 ---
 
 ## 2. Dashboard
@@ -72,6 +74,8 @@ Menú desplegable con acceso a:
 - Situación Financiera
 
 Cada uno con 3 opciones: Vista Previa, Descargar PDF, Imprimir.
+
+![Captura de pantalla - Dashboard](screenshots/dashboard.png)
 
 ---
 
@@ -111,6 +115,9 @@ Tabla con todos los socios registrados.
 | Tipo de Socio | Sí | Socio o Colaborador |
 | Activo | No | Marcado por defecto |
 
+![Captura de pantalla - Listado de Socios](screenshots/socios.png)
+![Captura de pantalla - Formulario de Socio](screenshots/socios-form.png)
+
 ---
 
 ## 4. Clientes
@@ -141,6 +148,9 @@ Tabla con todos los socios registrados.
 | Email | No | Máx. 255 |
 | Dirección | No | Máx. 500 |
 | Activo | No | Marcado por defecto |
+
+![Captura de pantalla - Listado de Clientes](screenshots/clientes.png)
+![Captura de pantalla - Formulario de Cliente](screenshots/clientes-form.png)
 
 ---
 
@@ -209,6 +219,9 @@ Valor Recibido = Valor Bruto — suma de valores de distribuciones con % > 0
 
 El campo Valor Recibido es de solo lectura y se recalcula al cambiar el Bruto o cualquier distribución.
 
+![Captura de pantalla - Listado de Facturas](screenshots/facturas.png)
+![Captura de pantalla - Formulario de Factura](screenshots/facturas-form.png)
+
 ---
 
 ## 6. Liquidaciones
@@ -257,6 +270,9 @@ Solo se puede cambiar el **Estado** de la liquidación:
 
 Los montos y facturas no se modifican.
 
+![Captura de pantalla - Generar Liquidación](screenshots/liquidaciones-crear.png)
+![Captura de pantalla - Listado de Liquidaciones](screenshots/liquidaciones.png)
+
 ---
 
 ## 7. Tipos de Retención
@@ -285,6 +301,8 @@ Los montos y facturas no se modifican.
 | Activo | No |
 
 **No se puede eliminar** un tipo que tenga facturas asociadas.
+
+![Captura de pantalla - Tipos de Retención](screenshots/tipos-retencion.png)
 
 ---
 
@@ -324,6 +342,9 @@ Los montos y facturas no se modifican.
 
 **Creación rápida de categoría:** al seleccionar "+ Nuevo" en el campo Categoría se abre un modal para crear una nueva categoría sin salir del formulario.
 
+![Captura de pantalla - Movimientos de Caja](screenshots/movimientos.png)
+![Captura de pantalla - Formulario de Movimiento](screenshots/movimientos-form.png)
+
 ---
 
 ## 9. Aportes de Socios
@@ -359,6 +380,9 @@ Los montos y facturas no se modifican.
 
 Solo los aportes en estado **Pagado** se contabilizan en los cálculos de cierre financiero y reportes.
 
+![Captura de pantalla - Aportes de Socios](screenshots/aportes.png)
+![Captura de pantalla - Formulario de Aporte](screenshots/aportes-form.png)
+
 ---
 
 ## 10. Usuarios del Sistema
@@ -387,6 +411,9 @@ Solo los aportes en estado **Pagado** se contabilizan en los cálculos de cierre
 | Socio Asociado | No |
 | Activo | No |
 
+![Captura de pantalla - Usuarios](screenshots/usuarios.png)
+![Captura de pantalla - Formulario de Usuario](screenshots/usuarios-form.png)
+
 ---
 
 ## 11. Configuración (Logo)
@@ -406,6 +433,8 @@ Permite gestionar el logo que aparece en los reportes PDF.
 
 **Nota:** Solo hay un logo a la vez. Subir uno nuevo reemplaza automáticamente el anterior.
 
+![Captura de pantalla - Configuración](screenshots/configuracion.png)
+
 ---
 
 ## 12. Reportes
@@ -421,6 +450,8 @@ Muestra:
 4. **Socios del mes**: tabla con socio, cuota, fecha de pago
 5. **Pagos del mes**: tabla con concepto y valor
 
+![Captura de pantalla - Reporte Mensual](screenshots/reporte-mensual.png)
+
 ### Reporte Anual
 
 **URL:** `/reportes/anual/{año}?mode=preview|pdf|print`
@@ -428,11 +459,15 @@ Muestra:
 - Tabla resumen: 12 filas (una por mes) con VR, Gastos, Saldo, CA, Ret 3%, TD + totales
 - Detalle de Socios y Pagos por cada mes
 
+![Captura de pantalla - Reporte Anual](screenshots/reporte-anual.png)
+
 ### Situación Financiera
 
 **URL:** `/reportes/situacion-financiera?mode=preview|pdf|print`
 
 - Resumen general de todos los períodos disponibles
+
+![Captura de pantalla - Situación Financiera](screenshots/reporte-situacion.png)
 - Tabla completa con todos los meses
 - Detalle de Socios y Pagos por período
 
