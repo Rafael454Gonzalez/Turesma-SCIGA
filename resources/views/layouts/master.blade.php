@@ -26,7 +26,7 @@
         <div class="sidebar-header px-5 py-5 border-b border-gray-800 flex items-center justify-between">
             <div>
                 <h1 class="text-base font-black italic tracking-tighter text-white">Turesma</h1>
-                <p class="sidebar-user text-[10px] font-black uppercase tracking-widest text-gray-500 mt-1">Facturación</p>
+                <p class="sidebar-user text-[10px] font-black uppercase tracking-widest text-gray-500 mt-1">SCIGA</p>
             </div>
             <button onclick="toggleSidebar()" class="toggle-btn text-gray-500 hover:text-[#E31E24] p-1 rounded cursor-pointer text-lg leading-none transition-colors">&larr;</button>
         </div>
