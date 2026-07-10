@@ -6,9 +6,11 @@
 <div class="flex items-center justify-between mb-6">
     <h2 class="text-2xl font-black italic tracking-tighter text-[#0a0a0a]">Clientes</h2>
     <div class="flex items-center gap-3">
-        <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">{{ $clientes->count() }} registros</span>
+        <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">{{ $clientes->total() }} registros</span>
+        @permission('crear-clientes')
         <a href="{{ route('clientes.create') }}"
             class="px-5 py-2.5 bg-[#E31E24] hover:bg-black text-white font-black uppercase tracking-widest text-xs rounded-xl shadow-lg shadow-red-200 hover:shadow-xl transition-all cursor-pointer">+ Nuevo Cliente</a>
+        @endpermission
     </div>
 </div>
 
@@ -49,6 +51,7 @@
                     </td>
                     <td class="py-3.5 px-5 text-center">
                         <div class="flex items-center justify-center gap-2">
+                            @permission('editar-clientes')
                             <a href="{{ route('clientes.edit', $c) }}"
                                 class="text-[10px] font-black uppercase tracking-widest text-[#E31E24] hover:text-black transition-colors">Editar</a>
                             <form method="POST" action="{{ route('clientes.destroy', $c) }}" onsubmit="return confirm('¿Eliminar cliente {{ $c->razon_social }}?')">
@@ -57,12 +60,25 @@
                                 <button type="submit"
                                     class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-[#E31E24] transition-colors cursor-pointer">Eliminar</button>
                             </form>
+                            @endpermission
                         </div>
                     </td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
+    </div>
+    <div class="px-5 py-4 border-t border-slate-200 flex items-center justify-between">
+        <form method="GET" action="{{ route('clientes.index') }}" class="flex items-center gap-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Mostrar</label>
+            <select name="per_page" onchange="this.form.submit()"
+                class="text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#E31E24] cursor-pointer">
+                <option value="5" {{ (request('per_page', 10) == 5) ? 'selected' : '' }}>5</option>
+                <option value="10" {{ (request('per_page', 10) == 10) ? 'selected' : '' }}>10</option>
+                <option value="20" {{ (request('per_page', 10) == 20) ? 'selected' : '' }}>20</option>
+            </select>
+        </form>
+        {{ $clientes->links() }}
     </div>
 </div>
 @endsection

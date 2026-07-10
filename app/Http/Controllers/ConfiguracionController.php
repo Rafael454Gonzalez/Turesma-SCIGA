@@ -9,6 +9,7 @@ class ConfiguracionController extends Controller
 {
     public function index()
     {
+        $this->authorizePermission('ver-reportes');
         $logoExiste = Storage::disk('public')->exists('logo.png');
         $logoUrl = $logoExiste ? asset('storage/logo.png') : null;
 
@@ -17,6 +18,7 @@ class ConfiguracionController extends Controller
 
     public function uploadLogo(Request $request)
     {
+        $this->authorizePermission('crear-usuarios');
         $request->validate([
             'logo' => 'required|image|mimes:png,jpg,jpeg,webp|max:2048',
         ]);
@@ -30,6 +32,7 @@ class ConfiguracionController extends Controller
 
     public function deleteLogo()
     {
+        $this->authorizePermission('crear-usuarios');
         Storage::disk('public')->delete('logo.png');
 
         return redirect()->route('configuracion')->with('success', 'Logo eliminado.');

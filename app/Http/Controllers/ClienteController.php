@@ -7,19 +7,22 @@ use Illuminate\Http\Request;
 
 class ClienteController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $clientes = Cliente::withCount('facturas')->orderBy('razon_social')->get();
+        $perPage = $request->get('per_page', 10);
+        $clientes = Cliente::withCount('facturas')->orderBy('razon_social')->paginate($perPage)->withQueryString();
         return view('clientes.index', compact('clientes'));
     }
 
     public function create()
     {
+        $this->authorizePermission('crear-clientes');
         return view('clientes.create');
     }
 
     public function store(Request $request)
     {
+        $this->authorizePermission('crear-clientes');
         $validated = $request->validate([
             'razon_social' => 'required|string|max:255',
             'ruc' => 'required|string|max:20|unique:clientes,ruc',
@@ -38,11 +41,13 @@ class ClienteController extends Controller
 
     public function edit(Cliente $cliente)
     {
+        $this->authorizePermission('editar-clientes');
         return view('clientes.edit', compact('cliente'));
     }
 
     public function update(Request $request, Cliente $cliente)
     {
+        $this->authorizePermission('editar-clientes');
         $validated = $request->validate([
             'razon_social' => 'required|string|max:255',
             'ruc' => 'required|string|max:20|unique:clientes,ruc,' . $cliente->id,
@@ -61,6 +66,7 @@ class ClienteController extends Controller
 
     public function destroy(Cliente $cliente)
     {
+        $this->authorizePermission('editar-clientes');
         $cliente->delete();
         return redirect()->route('clientes.index')->with('success', 'Cliente eliminado exitosamente.');
     }

@@ -18,6 +18,7 @@ class UsuarioController extends Controller
 
     public function create()
     {
+        $this->authorizePermission('crear-usuarios');
         $roles = Role::where('activo', true)->orderBy('nombre')->get();
         $socios = Socio::where('activo', true)->orderBy('nombres')->get();
         return view('usuarios.create', compact('roles', 'socios'));
@@ -25,6 +26,7 @@ class UsuarioController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorizePermission('crear-usuarios');
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email',
@@ -43,6 +45,7 @@ class UsuarioController extends Controller
 
     public function edit(User $usuario)
     {
+        $this->authorizePermission('editar-usuarios');
         $roles = Role::where('activo', true)->orderBy('nombre')->get();
         $socios = Socio::where('activo', true)->orderBy('nombres')->get();
         return view('usuarios.edit', compact('usuario', 'roles', 'socios'));
@@ -50,6 +53,7 @@ class UsuarioController extends Controller
 
     public function update(Request $request, User $usuario)
     {
+        $this->authorizePermission('editar-usuarios');
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $usuario->id,
@@ -72,6 +76,7 @@ class UsuarioController extends Controller
 
     public function destroy(User $usuario)
     {
+        $this->authorizePermission('eliminar-usuarios');
         $usuario->delete();
         return redirect()->route('usuarios.index')->with('success', 'Usuario eliminado exitosamente.');
     }

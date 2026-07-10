@@ -7,8 +7,10 @@
     <h2 class="text-2xl font-black italic tracking-tighter text-[#0a0a0a]">Socios</h2>
     <div class="flex items-center gap-3">
         <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">{{ $socios->count() }} registros</span>
+        @permission('crear-socios')
         <a href="{{ route('socios.create') }}"
             class="px-5 py-2.5 bg-[#E31E24] hover:bg-black text-white font-black uppercase tracking-widest text-xs rounded-xl shadow-lg shadow-red-200 hover:shadow-xl transition-all cursor-pointer">+ Nuevo Socio</a>
+        @endpermission
     </div>
 </div>
 
@@ -53,6 +55,7 @@
                     </td>
                     <td class="py-3.5 px-5 text-center">
                         <div class="flex items-center justify-center gap-2">
+                            @permission('editar-socios')
                             <a href="{{ route('socios.edit', $s) }}"
                                 class="text-[10px] font-black uppercase tracking-widest text-[#E31E24] hover:text-black transition-colors">Editar</a>
                             <form method="POST" action="{{ route('socios.destroy', $s) }}" onsubmit="return confirm('¿Eliminar socio {{ $s->nombres }}?')">
@@ -61,6 +64,7 @@
                                 <button type="submit"
                                     class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-[#E31E24] transition-colors cursor-pointer">Eliminar</button>
                             </form>
+                            @endpermission
                         </div>
                     </td>
                 </tr>

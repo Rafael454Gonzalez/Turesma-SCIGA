@@ -9,9 +9,11 @@
 <div class="flex items-center justify-between mb-6">
     <h2 class="text-2xl font-bold text-gray-800">Movimientos de Caja</h2>
     <div class="flex items-center gap-3">
-        <span class="text-sm text-gray-500">{{ $movimientos->count() }} registros</span>
+        <span class="text-sm text-gray-500">{{ $movimientos->total() }} registros</span>
+        @permission('crear-movimientos')
         <a href="{{ route('caja.movimientos.create') }}"
             class="px-5 py-2.5 bg-[#E31E24] hover:bg-black text-white font-black uppercase tracking-widest text-xs rounded-xl shadow-lg shadow-red-200 hover:shadow-xl transition-all cursor-pointer">+ Nuevo Movimiento</a>
+        @endpermission
     </div>
 </div>
 
@@ -116,6 +118,7 @@
                     </td>
                     <td class="py-3 px-5 text-center">
                         <div class="flex items-center justify-center gap-2">
+                            @permission('crear-movimientos')
                             <a href="{{ route('caja.movimientos.edit', $m) }}"
                                 class="text-blue-600 hover:text-blue-800 text-xs font-medium">Editar</a>
                             <form method="POST" action="{{ route('caja.movimientos.destroy', $m) }}" onsubmit="return confirm('¿Eliminar este movimiento?')">
@@ -124,6 +127,7 @@
                                 <button type="submit"
                                     class="text-red-600 hover:text-red-800 text-xs font-medium cursor-pointer">Eliminar</button>
                             </form>
+                            @endpermission
                         </div>
                     </td>
                 </tr>
@@ -134,6 +138,23 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+    <div class="px-5 py-4 border-t border-gray-200 flex items-center justify-between">
+        <form method="GET" action="{{ route('caja.movimientos.index') }}" class="flex items-center gap-2">
+            @foreach (request()->except('per_page', 'page') as $name => $value)
+                @if ($value)
+                    <input type="hidden" name="{{ $name }}" value="{{ $value }}">
+                @endif
+            @endforeach
+            <label class="text-xs font-medium text-gray-500">Mostrar</label>
+            <select name="per_page" onchange="this.form.submit()"
+                class="text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                <option value="5" {{ (request('per_page', 10) == 5) ? 'selected' : '' }}>5</option>
+                <option value="10" {{ (request('per_page', 10) == 10) ? 'selected' : '' }}>10</option>
+                <option value="20" {{ (request('per_page', 10) == 20) ? 'selected' : '' }}>20</option>
+            </select>
+        </form>
+        {{ $movimientos->links() }}
     </div>
 </div>
 @endsection

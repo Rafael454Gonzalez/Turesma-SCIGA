@@ -20,6 +20,7 @@ class CajaController extends Controller
         $catId = $request->query('categoria_id');
         $anio = $request->query('anio');
         $mes = $request->query('mes');
+        $perPage = $request->get('per_page', 10);
 
         $aniosDisponibles = MovimientoCaja::selectRaw('EXTRACT(YEAR FROM fecha)::int as anio')
             ->distinct()
@@ -28,10 +29,8 @@ class CajaController extends Controller
 
         if ($request->filled('anio')) {
             $anioEfectivo = $anio;
-        } elseif ($request->has('anio')) {
-            $anioEfectivo = null;
         } else {
-            $anioEfectivo = $aniosDisponibles->first();
+            $anioEfectivo = null;
         }
 
         $mesesDisponibles = MovimientoCaja::selectRaw('EXTRACT(MONTH FROM fecha)::int as mes')
@@ -42,10 +41,8 @@ class CajaController extends Controller
 
         if ($request->filled('mes')) {
             $mesEfectivo = $mes;
-        } elseif ($request->has('mes')) {
-            $mesEfectivo = null;
         } else {
-            $mesEfectivo = $mesesDisponibles->last();
+            $mesEfectivo = null;
         }
 
         $query = MovimientoCaja::with('categoria', 'creador');
@@ -53,7 +50,7 @@ class CajaController extends Controller
         if ($catId) $query->where('categoria_id', $catId);
         if ($anioEfectivo) $query->whereYear('fecha', $anioEfectivo);
         if ($mesEfectivo) $query->whereMonth('fecha', $mesEfectivo);
-        $movimientos = $query->orderBy('fecha')->orderBy('id')->get();
+        $movimientos = $query->orderBy('fecha')->orderBy('id')->paginate($perPage)->withQueryString();
 
         $tiposDisponibles = MovimientoCaja::select('tipo')->distinct()
             ->when($catId, fn($q) => $q->where('categoria_id', $catId))
@@ -89,12 +86,14 @@ class CajaController extends Controller
 
     public function movimientosCreate()
     {
+        $this->authorizePermission('crear-movimientos');
         $categorias = CategoriaMovimiento::where('activo', true)->orderBy('nombre')->get();
         return view('caja.movimientos_create', compact('categorias'));
     }
 
     public function movimientosStore(Request $request)
     {
+        $this->authorizePermission('crear-movimientos');
         $validated = $request->validate([
             'fecha' => 'required|date',
             'tipo' => 'required|in:ingreso,egreso,ajuste',
@@ -114,12 +113,14 @@ class CajaController extends Controller
 
     public function movimientosEdit(MovimientoCaja $movimiento)
     {
+        $this->authorizePermission('crear-movimientos');
         $categorias = CategoriaMovimiento::where('activo', true)->orderBy('nombre')->get();
         return view('caja.movimientos_edit', compact('movimiento', 'categorias'));
     }
 
     public function movimientosUpdate(Request $request, MovimientoCaja $movimiento)
     {
+        $this->authorizePermission('crear-movimientos');
         $validated = $request->validate([
             'fecha' => 'required|date',
             'tipo' => 'required|in:ingreso,egreso,ajuste',
@@ -136,6 +137,7 @@ class CajaController extends Controller
 
     public function movimientosDestroy(MovimientoCaja $movimiento)
     {
+        $this->authorizePermission('crear-movimientos');
         $movimiento->delete();
         return redirect()->route('caja.movimientos.index')
             ->with('success', 'Movimiento eliminado exitosamente.');
@@ -145,6 +147,7 @@ class CajaController extends Controller
 
     public function categoriasStore(Request $request)
     {
+        $this->authorizePermission('crear-movimientos');
         $validated = $request->validate([
             'nombre' => 'required|string|max:255|unique:categorias_movimiento,nombre',
             'tipo' => 'required|in:ingreso,egreso',
@@ -176,13 +179,14 @@ class CajaController extends Controller
         $mes = $request->query('periodo_mes');
         $anio = $request->query('periodo_anio');
         $estado = $request->query('estado_pago');
+        $perPage = $request->get('per_page', 10);
 
         $query = AporteSocio::with('socio');
         if ($socioId) $query->where('socio_id', $socioId);
         if ($mes) $query->where('periodo_mes', $mes);
         if ($anio) $query->where('periodo_anio', $anio);
         if ($estado) $query->where('estado_pago', $estado);
-        $aportes = $query->orderBy('periodo_anio')->orderBy('periodo_mes')->orderBy('socio_id')->get();
+        $aportes = $query->orderBy('periodo_anio')->orderBy('periodo_mes')->orderBy('socio_id')->paginate($perPage)->withQueryString();
 
         $socioIds = AporteSocio::select('socio_id')->distinct()
             ->when($mes, fn($q) => $q->where('periodo_mes', $mes))
@@ -215,12 +219,14 @@ class CajaController extends Controller
 
     public function aportesCreate()
     {
+        $this->authorizePermission('crear-movimientos');
         $socios = Socio::where('activo', true)->orderBy('nombres')->get();
         return view('caja.aportes_create', compact('socios'));
     }
 
     public function aportesStore(Request $request)
     {
+        $this->authorizePermission('crear-movimientos');
         $validated = $request->validate([
             'socio_id' => 'required|exists:socios,id',
             'periodo_mes' => 'required|integer|min:1|max:12',
@@ -239,12 +245,14 @@ class CajaController extends Controller
 
     public function aportesEdit(AporteSocio $aporte)
     {
+        $this->authorizePermission('crear-movimientos');
         $socios = Socio::where('activo', true)->orderBy('nombres')->get();
         return view('caja.aportes_edit', compact('aporte', 'socios'));
     }
 
     public function aportesUpdate(Request $request, AporteSocio $aporte)
     {
+        $this->authorizePermission('crear-movimientos');
         $validated = $request->validate([
             'socio_id' => 'required|exists:socios,id',
             'periodo_mes' => 'required|integer|min:1|max:12',
@@ -263,6 +271,7 @@ class CajaController extends Controller
 
     public function aportesDestroy(AporteSocio $aporte)
     {
+        $this->authorizePermission('crear-movimientos');
         $aporte->delete();
         return redirect()->route('caja.aportes.index')
             ->with('success', 'Aporte eliminado exitosamente.');

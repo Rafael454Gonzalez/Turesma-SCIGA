@@ -15,11 +15,13 @@ class SocioController extends Controller
 
     public function create()
     {
+        $this->authorizePermission('crear-socios');
         return view('socios.create');
     }
 
     public function store(Request $request)
     {
+        $this->authorizePermission('crear-socios');
         $validated = $request->validate([
             'nombres' => 'required|string|max:255',
             'identificacion' => 'required|string|max:50|unique:socios,identificacion',
@@ -40,11 +42,13 @@ class SocioController extends Controller
 
     public function edit(Socio $socio)
     {
+        $this->authorizePermission('editar-socios');
         return view('socios.edit', compact('socio'));
     }
 
     public function update(Request $request, Socio $socio)
     {
+        $this->authorizePermission('editar-socios');
         $validated = $request->validate([
             'nombres' => 'required|string|max:255',
             'identificacion' => 'required|string|max:50|unique:socios,identificacion,' . $socio->id,
@@ -65,6 +69,7 @@ class SocioController extends Controller
 
     public function destroy(Socio $socio)
     {
+        $this->authorizePermission('editar-socios');
         $socio->delete();
         return redirect()->route('socios.index')->with('success', 'Socio eliminado exitosamente.');
     }

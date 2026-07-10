@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
@@ -40,5 +41,18 @@ class User extends Authenticatable
     public function socio(): BelongsTo
     {
         return $this->belongsTo(Socio::class);
+    }
+
+    protected ?Collection $permisosCache = null;
+
+    public function hasPermission(string $slug): bool
+    {
+        if ($this->permisosCache === null) {
+            $this->permisosCache = $this->roles()
+                ->with('permisos')
+                ->get()
+                ->flatMap(fn($r) => $r->permisos->pluck('slug'));
+        }
+        return $this->permisosCache->contains($slug);
     }
 }

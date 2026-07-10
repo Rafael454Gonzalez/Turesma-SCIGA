@@ -15,11 +15,13 @@ class TipoRetencionController extends Controller
 
     public function create()
     {
+        $this->authorizePermission('crear-facturas');
         return view('tipos_retencion.create');
     }
 
     public function store(Request $request)
     {
+        $this->authorizePermission('crear-facturas');
         $validated = $request->validate([
             'nombre' => 'required|string|max:255|unique:tipos_retencion,nombre',
             'slug' => 'nullable|string|max:255|unique:tipos_retencion,slug',
@@ -40,11 +42,13 @@ class TipoRetencionController extends Controller
 
     public function edit(TipoRetencion $tipos_retencion)
     {
+        $this->authorizePermission('crear-facturas');
         return view('tipos_retencion.edit', compact('tipos_retencion'));
     }
 
     public function update(Request $request, TipoRetencion $tipos_retencion)
     {
+        $this->authorizePermission('crear-facturas');
         $validated = $request->validate([
             'nombre' => 'required|string|max:255|unique:tipos_retencion,nombre,' . $tipos_retencion->id,
             'slug' => 'nullable|string|max:255|unique:tipos_retencion,slug,' . $tipos_retencion->id,
@@ -61,6 +65,7 @@ class TipoRetencionController extends Controller
 
     public function destroy(TipoRetencion $tipos_retencion)
     {
+        $this->authorizePermission('crear-facturas');
         if ($tipos_retencion->retenciones()->count() > 0) {
             return redirect()->route('tipos-retencion.index')
                 ->with('error', 'No se puede eliminar un tipo de retención con facturas asociadas.');

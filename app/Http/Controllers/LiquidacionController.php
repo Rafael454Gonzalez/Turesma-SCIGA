@@ -9,6 +9,7 @@ use App\Models\Facturacion\FacturaDistribucion;
 use App\Models\Liquidacion\Liquidacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class LiquidacionController extends Controller
 {
@@ -17,8 +18,20 @@ class LiquidacionController extends Controller
         $socioId = $request->query('socio_id');
         $mes = $request->query('periodo_mes');
         $anio = $request->query('periodo_anio');
+        $perPage = (int) $request->get('per_page', 10);
 
-        $liquidaciones = $this->calcularLiquidaciones($socioId, $mes, $anio);
+        $todas = $this->calcularLiquidaciones($socioId, $mes, $anio);
+        $page = $request->get('page', 1);
+        $offset = ($page - 1) * $perPage;
+        $segmento = $todas->slice($offset, $perPage)->values();
+
+        $liquidaciones = new LengthAwarePaginator(
+            $segmento,
+            $todas->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
 
         $socios = Socio::where('activo', true)->orderBy('nombres')->get();
         $mesesDisponibles = $this->obtenerMesesDisponibles($anio);
@@ -90,6 +103,7 @@ class LiquidacionController extends Controller
 
     public function create(Request $request)
     {
+        $this->authorizePermission('crear-liquidaciones');
         $socios = Socio::where('activo', true)->orderBy('nombres')->get();
         $socioId = $request->query('socio_id');
         $mes = $request->query('mes');
@@ -133,6 +147,7 @@ class LiquidacionController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorizePermission('crear-liquidaciones');
         $validated = $request->validate([
             'socio_id' => 'required|exists:socios,id',
             'periodo_mes' => 'required|integer|min:1|max:12',
@@ -176,6 +191,7 @@ class LiquidacionController extends Controller
 
     public function edit(Liquidacion $liquidacion)
     {
+        $this->authorizePermission('aprobar-liquidaciones');
         $liquidacion->load('detalles.factura', 'socio');
         $socios = Socio::where('activo', true)->orderBy('nombres')->get();
 
@@ -184,6 +200,7 @@ class LiquidacionController extends Controller
 
     public function update(Request $request, Liquidacion $liquidacion)
     {
+        $this->authorizePermission('aprobar-liquidaciones');
         $validated = $request->validate([
             'estado' => 'required|in:borrador,emitido,aprobado,cerrado',
         ]);
@@ -196,6 +213,7 @@ class LiquidacionController extends Controller
 
     public function destroy(Liquidacion $liquidacion)
     {
+        $this->authorizePermission('crear-liquidaciones');
         $liquidacion->detalles()->delete();
         $liquidacion->delete();
         return redirect()->route('liquidaciones.index')

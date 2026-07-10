@@ -19,6 +19,7 @@ class FacturaController extends Controller
         $estado = $request->query('estado');
         $anio = $request->query('anio');
         $mes = $request->query('mes');
+        $perPage = $request->get('per_page', 10);
 
         $aniosDisponibles = Factura::selectRaw('EXTRACT(YEAR FROM fecha_emision)::int as anio')
             ->distinct()
@@ -27,10 +28,8 @@ class FacturaController extends Controller
 
         if ($request->filled('anio')) {
             $anioEfectivo = $anio;
-        } elseif ($request->has('anio')) {
-            $anioEfectivo = null;
         } else {
-            $anioEfectivo = $aniosDisponibles->first();
+            $anioEfectivo = null;
         }
 
         $mesesDisponibles = Factura::selectRaw('EXTRACT(MONTH FROM fecha_emision)::int as mes')
@@ -41,10 +40,8 @@ class FacturaController extends Controller
 
         if ($request->filled('mes')) {
             $mesEfectivo = $mes;
-        } elseif ($request->has('mes')) {
-            $mesEfectivo = null;
         } else {
-            $mesEfectivo = $mesesDisponibles->last();
+            $mesEfectivo = null;
         }
 
         $query = Factura::with('socio', 'cliente', 'retenciones.tipoRetencion', 'distribuciones.socioDestino');
@@ -53,7 +50,7 @@ class FacturaController extends Controller
         if ($estado) $query->where('estado_factura', $estado);
         if ($anioEfectivo) $query->whereYear('fecha_emision', $anioEfectivo);
         if ($mesEfectivo) $query->whereMonth('fecha_emision', $mesEfectivo);
-        $facturas = $query->orderBy('fecha_emision')->orderBy('numero_factura')->get();
+        $facturas = $query->orderBy('fecha_emision')->orderBy('numero_factura')->paginate($perPage)->withQueryString();
 
         $socioIds = Factura::select('socio_id')->distinct()
             ->when($clienteId, fn($q) => $q->where('cliente_id', $clienteId))
@@ -99,6 +96,7 @@ class FacturaController extends Controller
 
     public function create()
     {
+        $this->authorizePermission('crear-facturas');
         $socios = Socio::where('activo', true)->orderBy('nombres')->get();
         $clientes = Cliente::where('activo', true)->orderBy('razon_social')->get();
         $tiposRetencion = TipoRetencion::where('activo', true)->orderBy('nombre')->get();
@@ -108,6 +106,7 @@ class FacturaController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorizePermission('crear-facturas');
         $validated = $request->validate([
             'numero_factura' => 'required|string|max:50|unique:facturas,numero_factura',
             'fecha_emision' => 'required|date',
@@ -164,6 +163,7 @@ class FacturaController extends Controller
 
     public function edit(Factura $factura)
     {
+        $this->authorizePermission('editar-facturas');
         $factura->load('retenciones', 'distribuciones');
         $socios = Socio::where('activo', true)->orderBy('nombres')->get();
         $clientes = Cliente::where('activo', true)->orderBy('razon_social')->get();
@@ -174,6 +174,7 @@ class FacturaController extends Controller
 
     public function update(Request $request, Factura $factura)
     {
+        $this->authorizePermission('editar-facturas');
         $validated = $request->validate([
             'numero_factura' => 'required|string|max:50|unique:facturas,numero_factura,' . $factura->id,
             'fecha_emision' => 'required|date',
@@ -243,6 +244,7 @@ class FacturaController extends Controller
 
     public function destroy(Factura $factura)
     {
+        $this->authorizePermission('anular-facturas');
         $factura->retenciones()->delete();
         $factura->distribuciones()->delete();
         $factura->delete();
