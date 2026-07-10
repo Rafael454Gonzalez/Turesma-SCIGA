@@ -19,7 +19,7 @@ class FacturaController extends Controller
         $estado = $request->query('estado');
         $anio = $request->query('anio');
         $mes = $request->query('mes');
-        $perPage = $request->get('per_page', 10);
+        $perPage = $request->get('per_page', 5);
 
         $aniosDisponibles = Factura::selectRaw('EXTRACT(YEAR FROM fecha_emision)::int as anio')
             ->distinct()

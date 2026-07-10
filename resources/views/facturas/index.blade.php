@@ -183,9 +183,9 @@
             <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Mostrar</label>
             <select name="per_page" onchange="this.form.submit()"
                 class="text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#E31E24] cursor-pointer">
-                <option value="5" {{ (request('per_page', 10) == 5) ? 'selected' : '' }}>5</option>
-                <option value="10" {{ (request('per_page', 10) == 10) ? 'selected' : '' }}>10</option>
-                <option value="20" {{ (request('per_page', 10) == 20) ? 'selected' : '' }}>20</option>
+                <option value="5" {{ (request('per_page', 5) == 5) ? 'selected' : '' }}>5</option>
+                <option value="10" {{ (request('per_page', 5) == 10) ? 'selected' : '' }}>10</option>
+                <option value="20" {{ (request('per_page', 5) == 20) ? 'selected' : '' }}>20</option>
             </select>
         </form>
         {{ $facturas->links() }}

@@ -186,86 +186,105 @@
         ])->values();
     @endphp
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-xs font-black italic tracking-tighter text-[#0a0a0a]">Evolución Mensual</h3>
-                <div class="flex items-center gap-2" data-chart-filters="evolucion">
-                    <span class="text-[9px] font-black uppercase tracking-widest text-slate-400">Año</span>
-                    <select class="chart-anio text-[9px] font-bold border border-slate-200 rounded-lg px-2 py-1 outline-none focus:border-[#E31E24] bg-white text-slate-600">
-                        <option value="">Todos</option>
-                        @foreach ($aniosDisponibles as $a)
-                            <option value="{{ $a }}" {{ request('anio') == $a ? 'selected' : '' }}>{{ $a }}</option>
-                        @endforeach
-                    </select>
-                </div>
+    {{-- CARRUSEL DE GRÁFICOS --}}
+    <div id="charts-wrapper" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 mb-8 relative">
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+                <button id="btn-prev-chart" class="w-8 h-8 flex items-center justify-center rounded-xl border border-slate-200 hover:bg-slate-50 hover:border-[#E31E24] transition-all text-slate-400 hover:text-[#E31E24] cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <span id="chart-indicator" class="text-[10px] font-black uppercase tracking-widest text-slate-400 min-w-[2rem] text-center"></span>
+                <button id="btn-next-chart" class="w-8 h-8 flex items-center justify-center rounded-xl border border-slate-200 hover:bg-slate-50 hover:border-[#E31E24] transition-all text-slate-400 hover:text-[#E31E24] cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"/></svg>
+                </button>
+                <button id="btn-toggle-view" class="w-8 h-8 flex items-center justify-center rounded-xl border border-slate-200 hover:bg-slate-50 hover:border-[#E31E24] transition-all text-slate-400 hover:text-[#E31E24] cursor-pointer" title="Ver en cuadrícula">
+                    <svg id="icon-grid" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg>
+                    <svg id="icon-carousel" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
+                </button>
             </div>
-            <div id="chart-evolucion"></div>
+            <h3 id="chart-title" class="text-xs font-black italic tracking-tighter text-[#0a0a0a]"></h3>
+            <div id="chart-filters" class="flex items-center gap-2"></div>
         </div>
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-xs font-black italic tracking-tighter text-[#0a0a0a]">Distribución del Dinero</h3>
-                <div class="flex items-center gap-2" data-chart-filters="distribucion">
-                    <span class="text-[9px] font-black uppercase tracking-widest text-slate-400">Filtrar</span>
-                    <select class="chart-mes text-[9px] font-bold border border-slate-200 rounded-lg px-2 py-1 outline-none focus:border-[#E31E24] bg-white text-slate-600">
-                        <option value="">Mes</option>
-                        @foreach ($mesesDisponibles as $m)
-                            <option value="{{ $m }}" {{ request('mes') == $m ? 'selected' : '' }}>{{ $mesNombres[$m] ?? $m }}</option>
-                        @endforeach
-                    </select>
-                    <select class="chart-anio text-[9px] font-bold border border-slate-200 rounded-lg px-2 py-1 outline-none focus:border-[#E31E24] bg-white text-slate-600">
-                        <option value="">Año</option>
-                        @foreach ($aniosDisponibles as $a)
-                            <option value="{{ $a }}" {{ request('anio') == $a ? 'selected' : '' }}>{{ $a }}</option>
-                        @endforeach
-                    </select>
+        <div id="chart-container" class="min-h-[300px]">
+            <div class="chart-slide" data-title="Evolución Mensual">
+                <div class="slide-header flex items-center justify-between mb-4" style="display:none">
+                    <h3 class="slide-title text-xs font-black italic tracking-tighter text-[#0a0a0a]">Evolución Mensual</h3>
+                    <div class="flex items-center gap-2" data-chart-filters="evolucion">
+                        <span class="text-[9px] font-black uppercase tracking-widest text-slate-400">Año</span>
+                        <select class="chart-anio text-[9px] font-bold border border-slate-200 rounded-lg px-2 py-1 outline-none focus:border-[#E31E24] bg-white text-slate-600">
+                            <option value="">Todos</option>
+                            @foreach ($aniosDisponibles as $a)
+                                <option value="{{ $a }}" {{ request('anio') == $a ? 'selected' : '' }}>{{ $a }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
+                <div id="chart-evolucion"></div>
             </div>
-            <div id="chart-distribucion"></div>
+            <div class="chart-slide" data-title="Distribución del Dinero">
+                <div class="slide-header flex items-center justify-between mb-4" style="display:none">
+                    <h3 class="slide-title text-xs font-black italic tracking-tighter text-[#0a0a0a]">Distribución del Dinero</h3>
+                    <div class="flex items-center gap-2" data-chart-filters="distribucion">
+                        <span class="text-[9px] font-black uppercase tracking-widest text-slate-400">Filtrar</span>
+                        <select class="chart-mes text-[9px] font-bold border border-slate-200 rounded-lg px-2 py-1 outline-none focus:border-[#E31E24] bg-white text-slate-600">
+                            <option value="">Mes</option>
+                            @foreach ($mesesDisponibles as $m)
+                                <option value="{{ $m }}" {{ request('mes') == $m ? 'selected' : '' }}>{{ $mesNombres[$m] ?? $m }}</option>
+                            @endforeach
+                        </select>
+                        <select class="chart-anio text-[9px] font-bold border border-slate-200 rounded-lg px-2 py-1 outline-none focus:border-[#E31E24] bg-white text-slate-600">
+                            <option value="">Año</option>
+                            @foreach ($aniosDisponibles as $a)
+                                <option value="{{ $a }}" {{ request('anio') == $a ? 'selected' : '' }}>{{ $a }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div id="chart-distribucion"></div>
+            </div>
+            <div class="chart-slide" data-title="Top Socios por Valor Recibido">
+                <div class="slide-header flex items-center justify-between mb-4" style="display:none">
+                    <h3 class="slide-title text-xs font-black italic tracking-tighter text-[#0a0a0a]">Top Socios por Valor Recibido</h3>
+                    <div class="flex items-center gap-2" data-chart-filters="top">
+                        <span class="text-[9px] font-black uppercase tracking-widest text-slate-400">Filtrar</span>
+                        <select class="chart-mes text-[9px] font-bold border border-slate-200 rounded-lg px-2 py-1 outline-none focus:border-[#E31E24] bg-white text-slate-600">
+                            <option value="">Mes</option>
+                            @foreach ($mesesDisponibles as $m)
+                                <option value="{{ $m }}" {{ request('mes') == $m ? 'selected' : '' }}>{{ $mesNombres[$m] ?? $m }}</option>
+                            @endforeach
+                        </select>
+                        <select class="chart-anio text-[9px] font-bold border border-slate-200 rounded-lg px-2 py-1 outline-none focus:border-[#E31E24] bg-white text-slate-600">
+                            <option value="">Año</option>
+                            @foreach ($aniosDisponibles as $a)
+                                <option value="{{ $a }}" {{ request('anio') == $a ? 'selected' : '' }}>{{ $a }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div id="chart-top" style="height: 350px; width: 100%;"></div>
+            </div>
+            <div class="chart-slide" data-title="Comparativa Mensual">
+                <div class="slide-header flex items-center justify-between mb-4" style="display:none">
+                    <h3 class="slide-title text-xs font-black italic tracking-tighter text-[#0a0a0a]">Comparativa Mensual</h3>
+                    <div class="flex items-center gap-2" data-chart-filters="comparativa">
+                        <span class="text-[9px] font-black uppercase tracking-widest text-slate-400">Año</span>
+                        <select class="chart-anio text-[9px] font-bold border border-slate-200 rounded-lg px-2 py-1 outline-none focus:border-[#E31E24] bg-white text-slate-600">
+                            <option value="">Todos</option>
+                            @foreach ($aniosDisponibles as $a)
+                                <option value="{{ $a }}" {{ request('anio') == $a ? 'selected' : '' }}>{{ $a }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div id="chart-comparativa"></div>
+            </div>
         </div>
-    </div>
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-xs font-black italic tracking-tighter text-[#0a0a0a]">Top Socios por Valor Recibido</h3>
-                <div class="flex items-center gap-2" data-chart-filters="top">
-                    <span class="text-[9px] font-black uppercase tracking-widest text-slate-400">Filtrar</span>
-                    <select class="chart-mes text-[9px] font-bold border border-slate-200 rounded-lg px-2 py-1 outline-none focus:border-[#E31E24] bg-white text-slate-600">
-                        <option value="">Mes</option>
-                        @foreach ($mesesDisponibles as $m)
-                            <option value="{{ $m }}" {{ request('mes') == $m ? 'selected' : '' }}>{{ $mesNombres[$m] ?? $m }}</option>
-                        @endforeach
-                    </select>
-                    <select class="chart-anio text-[9px] font-bold border border-slate-200 rounded-lg px-2 py-1 outline-none focus:border-[#E31E24] bg-white text-slate-600">
-                        <option value="">Año</option>
-                        @foreach ($aniosDisponibles as $a)
-                            <option value="{{ $a }}" {{ request('anio') == $a ? 'selected' : '' }}>{{ $a }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <div id="chart-top" style="height: 350px; width: 100%;">
-                @if (count($topSocios) === 0)
-                <div class="flex items-center justify-center" style="height: 350px;">
-                    <p class="text-sm font-bold text-slate-300">📭 Sin facturas en este período</p>
-                </div>
-                @endif
-            </div>
-        </div>
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-xs font-black italic tracking-tighter text-[#0a0a0a]">Comparativa Mensual</h3>
-                <div class="flex items-center gap-2" data-chart-filters="comparativa">
-                    <span class="text-[9px] font-black uppercase tracking-widest text-slate-400">Año</span>
-                    <select class="chart-anio text-[9px] font-bold border border-slate-200 rounded-lg px-2 py-1 outline-none focus:border-[#E31E24] bg-white text-slate-600">
-                        <option value="">Todos</option>
-                        @foreach ($aniosDisponibles as $a)
-                            <option value="{{ $a }}" {{ request('anio') == $a ? 'selected' : '' }}>{{ $a }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <div id="chart-comparativa"></div>
+
+        <div id="chart-dots" class="flex items-center justify-center gap-1.5 mt-4">
+            <button data-index="0" class="chart-dot w-2 h-2 rounded-full bg-[#E31E24] border-0 cursor-pointer transition-all"></button>
+            <button data-index="1" class="chart-dot w-2 h-2 rounded-full bg-slate-300 border-0 cursor-pointer transition-all hover:bg-slate-400"></button>
+            <button data-index="2" class="chart-dot w-2 h-2 rounded-full bg-slate-300 border-0 cursor-pointer transition-all hover:bg-slate-400"></button>
+            <button data-index="3" class="chart-dot w-2 h-2 rounded-full bg-slate-300 border-0 cursor-pointer transition-all hover:bg-slate-400"></button>
         </div>
     </div>
 
@@ -366,10 +385,11 @@
                     return;
                 }
                 var sum = sumCierres(filtered);
-                var total = sum.total_gastos + sum.cuota_administrativa_total + sum.retencion_total + sum.saldo;
+                var total = parseFloat((sum.total_gastos + sum.cuota_administrativa_total + sum.retencion_total + sum.saldo).toFixed(2));
+                var series = [sum.total_gastos, sum.cuota_administrativa_total, sum.retencion_total, sum.saldo].map(function(v) { return parseFloat(v.toFixed(2)); });
                 var opts = {
                     chart: { type: 'donut', height: 300, toolbar: { show: true, tools: { download: true, selection: false, zoom: false, zoomin: false, zoomout: false, pan: false, reset: false } }, fontFamily: 'Arial, sans-serif', foreColor: '#94a3b8' },
-                    series: [sum.total_gastos, sum.cuota_administrativa_total, sum.retencion_total, sum.saldo],
+                    series: series,
                     labels: ['Gastos', 'Cuota Administrativa', 'Retenciones', 'Saldo'],
                     colors: ['#dc2626', '#f59e0b', '#6366f1', '#16a34a'],
                     plotOptions: { pie: { donut: { size: '70%', labels: { show: true, total: { show: true, label: 'Total', formatter: function () { return '$ ' + total.toFixed(2); }, fontSize: '11px', fontWeight: 700, color: '#0f172a' } } } } },
@@ -474,6 +494,152 @@
                 document.querySelector('#' + id).innerHTML = '';
                 if (chartRenderers[chartName]) chartRenderers[chartName](mes, anio);
             });
+
+            // ---- Carrusel / Grid ----
+            var currentChart = 0;
+            var totalCharts = 4;
+            var mode = 'grid';
+            var chartNames = ['evolucion', 'distribucion', 'top', 'comparativa'];
+
+            function showChart(index) {
+                if (mode === 'grid') return;
+                var slides = document.querySelectorAll('.chart-slide');
+                slides.forEach(function(s, i) {
+                    s.style.display = i === index ? 'block' : 'none';
+                });
+                document.getElementById('chart-title').textContent = slides[index].getAttribute('data-title');
+                document.getElementById('chart-indicator').textContent = (index + 1) + '/' + totalCharts;
+                var dots = document.querySelectorAll('.chart-dot');
+                dots.forEach(function(d, i) {
+                    d.style.backgroundColor = i === index ? '#E31E24' : '#cbd5e1';
+                });
+                var filtersContainer = document.getElementById('chart-filters');
+                var prevFilter = filtersContainer.querySelector('[data-chart-filters]');
+                if (prevFilter) slides[currentChart].appendChild(prevFilter);
+                var newFilter = slides[index].querySelector('[data-chart-filters]');
+                if (newFilter) filtersContainer.appendChild(newFilter);
+                currentChart = index;
+            }
+
+            function getFilterValues(chartName) {
+                var group = document.querySelector('[data-chart-filters="' + chartName + '"]');
+                if (!group) return { mes: null, anio: null };
+                var mesEl = group.querySelector('.chart-mes');
+                var anioEl = group.querySelector('.chart-anio');
+                return {
+                    mes: mesEl ? parseInt(mesEl.value) || null : null,
+                    anio: anioEl ? parseInt(anioEl.value) || null : null
+                };
+            }
+
+            function reRenderChart(chartName) {
+                var f = getFilterValues(chartName);
+                var id = 'chart-' + chartName;
+                var el = document.querySelector('#' + id);
+                if (el) {
+                    el.innerHTML = '';
+                    if (chartRenderers[chartName]) chartRenderers[chartName](f.mes, f.anio);
+                }
+            }
+
+            function initGrid() {
+                var slides = document.querySelectorAll('.chart-slide');
+                var wrapper = document.getElementById('charts-wrapper');
+                var container = document.getElementById('chart-container');
+                document.getElementById('btn-prev-chart').style.display = 'none';
+                document.getElementById('btn-next-chart').style.display = 'none';
+                document.getElementById('chart-indicator').style.display = 'none';
+                document.getElementById('chart-dots').style.display = 'none';
+                document.getElementById('chart-title').style.display = 'none';
+                document.getElementById('chart-filters').style.display = 'none';
+                document.getElementById('icon-grid').classList.add('hidden');
+                document.getElementById('icon-carousel').classList.remove('hidden');
+                document.getElementById('btn-toggle-view').setAttribute('title', 'Ver en carrusel');
+                wrapper.classList.remove('p-5');
+                wrapper.classList.add('p-0', 'bg-transparent', 'border-0', 'shadow-none');
+                container.classList.add('grid', 'grid-cols-1', 'lg:grid-cols-2', 'gap-6');
+                slides.forEach(function(s) {
+                    s.style.display = 'block';
+                    s.classList.add('bg-white', 'rounded-2xl', 'shadow-sm', 'border', 'border-slate-200', 'p-5');
+                    var header = s.querySelector('.slide-header');
+                    if (header) header.style.display = 'flex';
+                });
+                setTimeout(function() { chartNames.forEach(reRenderChart); }, 50);
+            }
+
+            function toggleMode() {
+                var slides = document.querySelectorAll('.chart-slide');
+                var wrapper = document.getElementById('charts-wrapper');
+                var container = document.getElementById('chart-container');
+                var isCarousel = mode === 'carousel';
+
+                if (isCarousel) {
+                    mode = 'grid';
+                    document.getElementById('btn-prev-chart').style.display = 'none';
+                    document.getElementById('btn-next-chart').style.display = 'none';
+                    document.getElementById('chart-indicator').style.display = 'none';
+                    document.getElementById('chart-dots').style.display = 'none';
+                    document.getElementById('chart-title').style.display = 'none';
+                    document.getElementById('chart-filters').style.display = 'none';
+                    document.getElementById('icon-grid').classList.add('hidden');
+                    document.getElementById('icon-carousel').classList.remove('hidden');
+                    document.getElementById('btn-toggle-view').setAttribute('title', 'Ver en carrusel');
+                    wrapper.classList.remove('p-5');
+                    wrapper.classList.add('p-0', 'bg-transparent', 'border-0', 'shadow-none');
+                    container.classList.add('grid', 'grid-cols-1', 'lg:grid-cols-2', 'gap-6');
+
+                    var filtersContainer = document.getElementById('chart-filters');
+                    var movedFilter = filtersContainer.querySelector('[data-chart-filters]');
+                    if (movedFilter) slides[currentChart].appendChild(movedFilter);
+
+                    slides.forEach(function(s) {
+                        s.style.display = 'block';
+                        s.classList.add('bg-white', 'rounded-2xl', 'shadow-sm', 'border', 'border-slate-200', 'p-5');
+                        var header = s.querySelector('.slide-header');
+                        if (header) header.style.display = 'flex';
+                    });
+
+                    setTimeout(function() { chartNames.forEach(reRenderChart); }, 50);
+                } else {
+                    mode = 'carousel';
+                    document.getElementById('btn-prev-chart').style.display = '';
+                    document.getElementById('btn-next-chart').style.display = '';
+                    document.getElementById('chart-indicator').style.display = '';
+                    document.getElementById('chart-dots').style.display = '';
+                    document.getElementById('chart-title').style.display = '';
+                    document.getElementById('chart-filters').style.display = '';
+                    document.getElementById('icon-grid').classList.remove('hidden');
+                    document.getElementById('icon-carousel').classList.add('hidden');
+                    document.getElementById('btn-toggle-view').setAttribute('title', 'Ver en cuadrícula');
+                    wrapper.classList.remove('p-0', 'bg-transparent', 'border-0', 'shadow-none');
+                    wrapper.classList.add('p-5');
+                    container.classList.remove('grid', 'grid-cols-1', 'lg:grid-cols-2', 'gap-6');
+
+                    slides.forEach(function(s) {
+                        s.classList.remove('bg-white', 'rounded-2xl', 'shadow-sm', 'border', 'border-slate-200', 'p-5');
+                        var header = s.querySelector('.slide-header');
+                        if (header) header.style.display = 'none';
+                    });
+
+                    showChart(currentChart);
+                    reRenderChart(chartNames[currentChart]);
+                }
+            }
+
+            document.getElementById('btn-prev-chart').addEventListener('click', function() {
+                showChart((currentChart - 1 + totalCharts) % totalCharts);
+            });
+            document.getElementById('btn-next-chart').addEventListener('click', function() {
+                showChart((currentChart + 1) % totalCharts);
+            });
+            document.getElementById('btn-toggle-view').addEventListener('click', toggleMode);
+            document.querySelectorAll('.chart-dot').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    showChart(parseInt(this.getAttribute('data-index')));
+                });
+            });
+
+            initGrid();
         });
     </script>
 @endsection
