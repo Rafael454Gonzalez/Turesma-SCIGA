@@ -374,7 +374,8 @@
                     legend: { position: 'top', horizontalAlign: 'right', fontSize: '10px', fontWeight: 700, labels: { colors: '#475569' }, markers: { width: 10, height: 10, radius: 2 } },
                     dataLabels: { enabled: false },
                 });
-                new ApexCharts(document.querySelector('#chart-evolucion'), opts).render();
+                chartInstances['evolucion'] = new ApexCharts(document.querySelector('#chart-evolucion'), opts);
+                chartInstances['evolucion'].render();
             }
 
             // ---- Distribución ----
@@ -399,7 +400,8 @@
                     tooltip: { y: { formatter: function (v) { return '$ ' + v.toFixed(2); } } },
                     responsive: [{ breakpoint: 640, options: { chart: { height: 250 }, legend: { position: 'bottom' } } }],
                 };
-                new ApexCharts(document.querySelector('#chart-distribucion'), opts).render();
+                chartInstances['distribucion'] = new ApexCharts(document.querySelector('#chart-distribucion'), opts);
+                chartInstances['distribucion'].render();
             }
 
             // ---- Top Socios ----
@@ -422,7 +424,8 @@
                     grid: { borderColor: '#f1f5f9', padding: { left: 0, right: 30 } },
                     legend: { show: false },
                 };
-                new ApexCharts(document.querySelector('#chart-top'), opts).render();
+                chartInstances['top'] = new ApexCharts(document.querySelector('#chart-top'), opts);
+                chartInstances['top'].render();
             }
 
             // ---- Comparativa ----
@@ -451,7 +454,8 @@
                     grid: { borderColor: '#f1f5f9', padding: { left: 10, right: 10 } },
                     legend: { position: 'top', horizontalAlign: 'right', fontSize: '10px', fontWeight: 700, labels: { colors: '#475569' }, markers: { width: 10, height: 10, radius: 2 } },
                 });
-                new ApexCharts(document.querySelector('#chart-comparativa'), opts).render();
+                chartInstances['comparativa'] = new ApexCharts(document.querySelector('#chart-comparativa'), opts);
+                chartInstances['comparativa'].render();
             }
 
             // ---- Renderear gráfica individual por nombre ----
@@ -461,6 +465,7 @@
                 top: renderTopSocios,
                 comparativa: renderComparativa,
             };
+            var chartInstances = {};
 
             // ---- Eventos ----
             document.querySelectorAll('[data-chart-filters]').forEach(function(group) {
@@ -470,8 +475,11 @@
                 function redraw() {
                     var mes = mesEl ? parseInt(mesEl.value) || null : null;
                     var anio = anioEl ? parseInt(anioEl.value) || null : null;
-                    // Limpiar solo ese chart
                     var id = 'chart-' + chartName;
+                    if (chartInstances[chartName]) {
+                        chartInstances[chartName].destroy();
+                        delete chartInstances[chartName];
+                    }
                     document.querySelector('#' + id).innerHTML = '';
                     if (chartRenderers[chartName]) chartRenderers[chartName](mes, anio);
                 }
@@ -537,6 +545,10 @@
                 var id = 'chart-' + chartName;
                 var el = document.querySelector('#' + id);
                 if (el) {
+                    if (chartInstances[chartName]) {
+                        chartInstances[chartName].destroy();
+                        delete chartInstances[chartName];
+                    }
                     el.innerHTML = '';
                     if (chartRenderers[chartName]) chartRenderers[chartName](f.mes, f.anio);
                 }
